@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 router.use("/messages", require("./messages"));
+router.use("/messages_bulk", require("./messages_bulk"));
 router.use("/conversations", require("./conversations"));
 router.use("/users", require("./users"));
 
