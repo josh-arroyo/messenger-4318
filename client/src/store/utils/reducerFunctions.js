@@ -79,3 +79,15 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     }
   });
 };
+
+export const clearReadNoticeInStore = (state, convoId) => {
+  return state.map((convo) => {
+    if (convo.id === convoId) {
+      const convoCopy = { ...convo };
+      convoCopy.notificationCount = 0;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
