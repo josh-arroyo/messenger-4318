@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import { BadgeAvatar, BadgeReadStatus, ChatContent } from "../Sidebar";
+import { BadgeAvatar, BadgeUnread, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
@@ -23,10 +23,10 @@ const useStyles = makeStyles((theme) => ({
 const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
-  const { otherUser, notificationCount } = conversation;
+  const { otherUser, unreadCount, id, user1Id, user2Id } = conversation;
 
   const handleClick = async (conversation) => {
-    await props.setReadMessages(conversation);
+    await props.setReadMessages(id, otherUser.id, user1Id, user2Id);
     await props.setActiveChat(conversation.otherUser.username);
   };
 
@@ -38,8 +38,8 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} />
-      <BadgeReadStatus sidebar={true} notificationCount={notificationCount} />
+      <ChatContent conversation={conversation} unreadCount={unreadCount} />
+      <BadgeUnread sidebar={true} unreadCount={unreadCount} />
     </Box>
   );
 };
@@ -49,8 +49,8 @@ const mapDispatchToProps = (dispatch) => {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
     },
-    setReadMessages: (conversation) => {
-      dispatch(setReadMessages(conversation));
+    setReadMessages: (id, otherUserId, user1Id, user2Id) => {
+      dispatch(setReadMessages(id, otherUserId, user1Id, user2Id));
     },
   };
 };

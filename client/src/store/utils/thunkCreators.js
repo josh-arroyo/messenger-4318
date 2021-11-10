@@ -5,7 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
-  clearReadStatus,
+  clearUnreadCount,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -102,6 +102,7 @@ export const postMessage = (body) => async (dispatch) => {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
       dispatch(setNewMessage(data.message));
+      dispatch(clearUnreadCount(body.conversationId));
     }
 
     sendMessage(data, body);
@@ -119,22 +120,24 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-// we determine which messages need marked as read, write to db and update state
-export const setReadMessages = (conversation) => async (dispatch) => {
-  try {
-    const sender = conversation.otherUser.id;
-    const messageIds = conversation.messages
-      .filter((message) => message.senderId === sender)
-      .map((message) => message.id);
-    const body = { messageIds };
-
-    // this is a blind POST request, try/catch loop should grab errors but maybe define
-    // something more explicit with the results?
-    await axios.post("/api/messages_bulk", body);
-
-    // we already have the conversation id so we can just pass it to state handler
-    dispatch(clearReadStatus(conversation.id));
-  } catch (error) {
-    console.log(error);
-  }
+export const sendReadMessages = (conversationId, readerId) => {
+  socket.emit("read-messages", {
+    conversationId,
+    readerId,
+  });
 };
+
+export const setReadMessages =
+  (conversationId, senderId, user1Id, user2Id) => async (dispatch) => {
+    try {
+      const recipientId = user1Id === senderId ? user2Id : user1Id;
+      const body = { senderId };
+
+      await axios.patch("/api/messages", body);
+
+      dispatch(clearUnreadCount(conversationId));
+      sendReadMessages(conversationId, recipientId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
