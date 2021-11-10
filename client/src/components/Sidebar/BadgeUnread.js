@@ -3,32 +3,30 @@ import { Box, Badge } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   badge: {
     height: 20,
     borderRadius: "10px",
-    backgroundColor: "#3f92ff",
     color: "white",
-  },
-  sidebar: {
-    marginRight: 50,
+    marginRight: theme.spacing(4),
   },
 }));
 
-const BadgeReadStatus = (props) => {
+const BadgeUnread = (props) => {
   const classes = useStyles();
-  const { sidebar, notificationCount } = props;
+  const { unreadCount } = props;
 
   return (
-    <Box className={sidebar ? classes.sidebar : ""}>
+    <Box>
       <Badge
         classes={{ badge: classes.badge }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         overlap="circle"
-        badgeContent={notificationCount}
+        badgeContent={unreadCount}
+        color="primary"
       ></Badge>
     </Box>
   );
 };
 
-export default BadgeReadStatus;
+export default BadgeUnread;
