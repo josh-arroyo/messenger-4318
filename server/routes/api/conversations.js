@@ -74,9 +74,9 @@ router.get("/", async (req, res, next) => {
         convoJSON.messages[convoJSON.messages.length - 1].text;
 
       // set property for notification count. only count unread messages from the other user
-      convoJSON.notificationCount = convoJSON.messages.filter(
+      convoJSON.unreadCount = convoJSON.messages.filter(
         (message) =>
-          message.readAt === null && message.senderId === convoJSON.otherUser.id
+          message.read === false && message.senderId === convoJSON.otherUser.id
       ).length;
       conversations[i] = convoJSON;
     }
