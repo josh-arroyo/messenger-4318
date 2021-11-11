@@ -43,4 +43,32 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.patch("/", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    const { senderId } = req.body;
+    const currentUser = req.user.id;
+    const conversation = await Conversation.findConversation(
+      senderId,
+      currentUser
+    );
+
+    if (!conversation) {
+      return res.sendStatus(403);
+    }
+
+    await Message.update(
+      {
+        read: true,
+      },
+      { where: { senderId: senderId, conversationId: conversation.id } }
+    );
+    return res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
